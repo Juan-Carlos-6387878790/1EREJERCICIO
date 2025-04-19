@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ecoAlextian - Registro de Pedidos</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --verde: #2e7d32;
+      --fondo: #f4fdf7;
+      --blanco: #ffffff;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--fondo);
+      margin: 0;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
+    .card {
+      background: var(--blanco);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 25px;
+      margin-top: 40px;
+    }
+    h1 {
+      text-align: center;
+      color: var(--verde);
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 600;
+    }
+    input, select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+    button {
+      background-color: var(--verde);
+      color: white;
+      border: none;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1b5e20;
+    }
+    .mensaje {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 6px;
+      display: none;
+      text-align: center;
+    }
+    .exito {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #81c784;
+    }
+    footer {
+      text-align: center;
+      font-size: 13px;
+      color: #888;
+      margin: 40px 0 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <h1>ecoAlextian</h1>
+    <form id="formulario">
+      <label>Nombre Completo</label><input type="text" id="nombre" required>
+      <label>Teléfono</label><input type="tel" id="telefono" required pattern="[0-9]{10}">
+      <label>Correo Electrónico</label><input type="email" id="correo" required>
+      <label>Producto de Interés</label>
+      <select id="producto" required>
+        <option value="">-- Selecciona --</option>
+        <option value="Shampoo Natural">Shampoo Natural</option>
+        <option value="Jabón Orgánico">Jabón Orgánico</option>
+        <option value="Aceites Esenciales">Aceites Esenciales</option>
+        <option value="Kits de Regalo">Kits de Regalo</option>
+      </select>
+      <label>Comentarios</label><textarea id="comentarios" rows="3"></textarea>
+      <button type="submit">Registrar Pedido</button>
+    </form>
+    <div id="mensaje" class="mensaje"></div>
+  </div>
+</div>
+<footer>© 2025 ecoAlextian · Productos Naturales Artesanales</footer>
+<script>
+  const formulario = document.getElementById("formulario");
+  const mensaje = document.getElementById("mensaje");
+
+  formulario.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const pedido = {
+      nombre: nombre.value.trim(),
+      telefono: telefono.value.trim(),
+      correo: correo.value.trim(),
+      producto: producto.value,
+      comentarios: comentarios.value.trim()
+    };
+    if (!pedido.nombre || !pedido.telefono || !pedido.correo || !pedido.producto) {
+      mostrarMensaje("Completa todos los campos.", false);
+      return;
+    }
+
+    try {
+      const respuesta = await fetch("https://script.google.com/macros/s/AKfycbyhYZr0kfdtXerUexr8F9h2vlBjDrKiNvNne3TfFcNKUgrNdQ568ZVDjm-XHmyHCq4Ntw/exec", {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(pedido)
+      });
+      mostrarMensaje("Pedido guardado exitosamente en Google Sheets.", true);
+      generarPDF(pedido);
+      formulario.reset();
+    } catch (error) {
+      mostrarMensaje("Error al guardar el pedido.", false);
+      console.error("Error:", error);
+    }
+  });
+
+  function mostrarMensaje(texto, exito) {
+    mensaje.textContent = texto;
+    mensaje.className = "mensaje " + (exito ? "exito" : "error");
+    mensaje.style.display = "block";
+    setTimeout(() => mensaje.style.display = "none", 4000);
+  }
+
+  function generarPDF(pedido) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text("📦 Pedido ecoAlextian", 20, 20);
+    doc.setFontSize(12);
+    doc.text(`Nombre: ${pedido.nombre}`, 20, 40);
+    doc.text(`Teléfono: ${pedido.telefono}`, 20, 50);
+    doc.text(`Correo: ${pedido.correo}`, 20, 60);
+    doc.text(`Producto: ${pedido.producto}`, 20, 70);
+    doc.text(`Comentarios: ${pedido.comentarios || "N/A"}`, 20, 80);
+    doc.text(`Fecha: ${new Date().toLocaleString()}`, 20, 90);
+    doc.save(`pedido_${pedido.nombre.replace(/\s+/g, "_")}.pdf`);
+  }
+</script>
+</body>
+</html>
