@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ecoAlextian - Registro de Pedidos</title>
+  <title>ecoAlextian - Registro de Pedidos e Inventario</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     :root {
@@ -11,73 +11,150 @@
       --fondo: #f4fdf7;
       --blanco: #ffffff;
     }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: var(--fondo);
-      margin: 0;
-      color: #333;
-    }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      padding: 20px;
-    }
-    .card {
-      background: var(--blanco);
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      padding: 25px;
-      margin-top: 40px;
-    }
-    h1 {
-      text-align: center;
-      color: var(--verde);
-    }
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: 600;
-    }
-    input, select, textarea, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 15px;
-    }
-    button {
-      background-color: var(--verde);
-      color: white;
-      border: none;
-      margin-top: 20px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #1b5e20;
-    }
-    .mensaje {
-      margin-top: 20px;
-      padding: 12px;
-      border-radius: 6px;
-      display: none;
-      text-align: center;
-    }
-    .exito {
-      background: #e8f5e9;
-      color: #2e7d32;
-      border: 1px solid #81c784;
-    }
-    footer {
-      text-align: center;
-      font-size: 13px;
-      color: #888;
-      margin: 40px 0 20px;
-    }
+    body { font-family: 'Segoe UI', sans-serif; background-color: var(--fondo); margin: 0; color: #333; }
+    .container { max-width: 600px; margin: auto; padding: 20px; }
+    .card { background: var(--blanco); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 25px; margin: 40px 0; }
+    h1, h2 { text-align: center; color: var(--verde); }
+    label { display: block; margin-top: 10px; font-weight: 600; }
+    input, select, textarea, button { width: 100%; padding: 10px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; font-size: 15px; box-sizing: border-box; }
+    button { background-color: var(--verde); color: white; border: none; margin-top: 20px; cursor: pointer; }
+    button:hover { background-color: #1b5e20; }
+    .mensaje { margin-top: 20px; padding: 12px; border-radius: 6px; display: none; text-align: center; }
+    .exito { background: #e8f5e9; color: #2e7d32; border: 1px solid #81c784; }
+    .error { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+    footer { text-align: center; font-size: 13px; color: #888; margin: 40px 0 20px; }
   </style>
 </head>
 <body>
-<div class="container">
-  <div class="card">
-    <h1>ecoAlextian</h1>
-    <form id="form
+  <div class="container">
+    <div class="card">
+      <h1>ecoAlextian</h1>
+      <h2>Registro de Pedidos</h2>
+      <form id="formPedido">
+        <label>Nombre Completo</label>
+        <input type="text" id="nombre" required>
+        <label>Teléfono</label>
+        <input type="tel" id="telefono" required pattern="[0-9]{10}">
+        <label>Correo Electrónico</label>
+        <input type="email" id="correo" required>
+        <label>Producto de Interés</label>
+        <select id="producto" required>
+          <option value="">-- Selecciona --</option>
+          <option value="Shampoo Natural">Shampoo Natural</option>
+          <option value="Jabón Orgánico">Jabón Orgánico</option>
+          <option value="Aceites Esenciales">Aceites Esenciales</option>
+          <option value="Kits de Regalo">Kits de Regalo</option>
+        </select>
+        <label>Comentarios</label>
+        <textarea id="comentarios" rows="3"></textarea>
+        <button type="submit">Registrar Pedido</button>
+      </form>
+      <div id="mensajePedido" class="mensaje"></div>
+    </div>
+
+    <div class="card">
+      <h2>Movimientos de Inventario</h2>
+      <form id="formInventario">
+        <label>Producto</label>
+        <select id="invProducto" required>
+          <option value="">-- Selecciona --</option>
+          <option value="Shampoo Natural">Shampoo Natural</option>
+          <option value="Jabón Orgánico">Jabón Orgánico</option>
+          <option value="Aceites Esenciales">Aceites Esenciales</option>
+          <option value="Kits de Regalo">Kits de Regalo</option>
+        </select>
+        <label>Movimiento</label>
+        <select id="movimiento" required>
+          <option value="">-- Tipo --</option>
+          <option value="Compra">Compra</option>
+          <option value="Venta">Venta</option>
+        </select>
+        <label>Cantidad</label>
+        <input type="number" id="cantidad" min="1" required>
+        <label>Costo Unitario</label>
+        <input type="number" id="costoUnit" min="0" step="0.01">
+        <label>Precio de Venta</label>
+        <input type="number" id="precioVenta" min="0" step="0.01">
+        <button type="submit">Registrar Movimiento</button>
+      </form>
+      <div id="mensajeInv" class="mensaje"></div>
+    </div>
+  </div>
+  <footer>© 2025 ecoAlextian · Productos Naturales Artesanales</footer>
+
+  <script>
+    // Endpoints
+    const pedidosEndpoint = "https://script.google.com/macros/s/AKfycbyhYZr0kfdtXerUexr8F9h2vlBjDrKiNvNne3TfFcNKUgrNdQ568ZVDjm-XHmyHCq4Ntw/exec";
+    const invEndpoint = "https://script.google.com/macros/s/YOUR_INVENTORY_SCRIPT_ID/exec"; // Reemplaza con tu URL de Inventario
+
+    // Pedidos
+    const formPedido = document.getElementById('formPedido');
+    const mensajePedido = document.getElementById('mensajePedido');
+    formPedido.addEventListener('submit', async e => {
+      e.preventDefault();
+      const pedido = {
+        nombre: nombre.value.trim(),
+        telefono: telefono.value.trim(),
+        correo: correo.value.trim(),
+        producto: producto.value,
+        comentarios: comentarios.value.trim()
+      };
+      if (!pedido.nombre || !pedido.telefono || !pedido.correo || !pedido.producto) {
+        mostrarMensaje(mensajePedido, 'Completa campos.', false);
+        return;
+      }
+      try {
+        await fetch(pedidosEndpoint, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(pedido) });
+        mostrarMensaje(mensajePedido, 'Pedido registrado.', true);
+        generarPDF(pedido);
+        formPedido.reset();
+      } catch { mostrarMensaje(mensajePedido, 'Error al registrar pedido.', false); }
+    });
+
+    // Inventario
+    const formInv = document.getElementById('formInventario');
+    const mensajeInv = document.getElementById('mensajeInv');
+    formInv.addEventListener('submit', async e => {
+      e.preventDefault();
+      const mov = {
+        producto: invProducto.value,
+        movimiento: movimiento.value,
+        cantidad: parseInt(cantidad.value,10),
+        costoUnit: costoUnit.value? parseFloat(costoUnit.value): 0,
+        precioVenta: precioVenta.value? parseFloat(precioVenta.value): 0
+      };
+      if (!mov.producto || !mov.movimiento || mov.cantidad<1) {
+        mostrarMensaje(mensajeInv, 'Completa campos.', false);
+        return;
+      }
+      try {
+        const resp = await fetch(invEndpoint, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(mov)});
+        const data = await resp.json();
+        mostrarMensaje(mensajeInv, `Stock actual: ${data.stock}`, true);
+        formInv.reset();
+      } catch { mostrarMensaje(mensajeInv, 'Error al registrar movimiento.', false); }
+    });
+
+    // Utilidades
+    function mostrarMensaje(container, text, ok) {
+      container.textContent = text;
+      container.className = 'mensaje ' + (ok? 'exito':'error');
+      container.style.display = 'block';
+      setTimeout(()=> container.style.display='none',5000);
+    }
+
+    function generarPDF(pedido) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text('📦 Pedido ecoAlextian',20,20);
+      doc.setFontSize(12);
+      ['Nombre','Teléfono','Correo','Producto','Comentarios','Fecha'].forEach((label,i)=>{
+        const value = i<5? Object.values(pedido)[i]: new Date().toLocaleString();
+        doc.text(`${label}: ${value}`,20,40+ i*10);
+      });
+      doc.save(`pedido_${pedido.nombre.replace(/\s+/g,'_')}.pdf`);
+    }
+  </script>
+</body>
+</html>
