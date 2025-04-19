@@ -1,24 +1,50 @@
-function doPost(e) {
-  try {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Hoja 1");
-    const data = JSON.parse(e.postData.contents);
-
-    sheet.appendRow([
-      new Date(),
-      data.nombre,
-      data.telefono,
-      data.correo,
-      data.producto,
-      data.comentarios
-    ]);
-
-    return ContentService.createTextOutput(
-      JSON.stringify({ status: "success", message: "Pedido guardado" })
-    ).setMimeType(ContentService.MimeType.JSON);
-
-  } catch (err) {
-    return ContentService.createTextOutput(
-      JSON.stringify({ status: "error", message: err.message })
-    ).setMimeType(ContentService.MimeType.JSON);
-  }
-}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ecoAlextian - Registro de Pedidos</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --verde: #2e7d32;
+      --fondo: #f4fdf7;
+      --blanco: #ffffff;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--fondo);
+      margin: 0;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
+    .card {
+      background: var(--blanco);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 25px;
+      margin-top: 40px;
+    }
+    h1 {
+      text-align: center;
+      color: var(--verde);
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 600;
+    }
+    input, select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+    button {
+      background-color: var(--verde);
